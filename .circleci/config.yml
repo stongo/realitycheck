@@ -22,12 +22,18 @@ workflows:
           requires:
             - write_workspace
       - write_artifacts
+  scheduled_job:
+    jobs:
+      - nightly
+    triggers:
+      - schedule:
+          cron: "0 1 * * *"
 
 resource-job-default: &resource-job-default
   docker:
     - image: circleci/ruby:2.4.1
   steps:
-    - run: echo $CIRCLE_JOB 
+    - run: echo $CIRCLE_JOB
 
 machine: &machine
   machine: true
@@ -49,7 +55,7 @@ basic_docker_build: &basic_docker_build
     echo "FROM alpine:latest" > $dockerfile
     echo "RUN echo hello" >> $dockerfile
     docker build -f $dockerfile --tag throwaway:$CIRCLE_BUILD_NUM .
-    docker run --rm throwaway:$CIRCLE_BUILD_NUM 
+    docker run --rm throwaway:$CIRCLE_BUILD_NUM
 
 jobs:
   small:
@@ -90,7 +96,7 @@ jobs:
       - setup_remote_docker
       - run:
           <<: *basic_docker_build
-      - run: docker version      
+      - run: docker version
 
   contexts:
     docker:
@@ -142,5 +148,11 @@ jobs:
           destination: artifact-file.txt
 
       - store_artifacts:
-          path: /tmp/artifacts     
+          path: /tmp/artifacts
 
+  nightly:
+    docker:
+      - image: alpine:latest
+    working_directory: /a/scheduled/test
+    steps:
+      - run: echo "test scheduled builds"
