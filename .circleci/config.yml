@@ -1,6 +1,5 @@
 version: 2
 debug: true
-
 resource_job_defaults: &resource_job_defaults
   docker: [{image: 'circleci/ruby:2.4.1'}]
   steps: [{run: 'echo $CIRCLE_JOB'}]
@@ -132,7 +131,6 @@ jobs:
     working_directory: ~/realitycheck
     steps:
       - checkout
-
       - run:
           name: Creating Dummy Artifacts
           command: |
